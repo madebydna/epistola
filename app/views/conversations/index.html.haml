@@ -1,0 +1,21 @@
+%h1 Listing conversations
+
+%table
+  %tr
+    %th Group
+    %th Subject
+    %th
+    %th
+    %th
+
+  - @conversations.each do |conversation|
+    %tr
+      %td= conversation.group_id
+      %td= conversation.subject
+      %td= link_to 'Show', conversation
+      %td= link_to 'Edit', edit_conversation_path(conversation)
+      %td= link_to 'Destroy', conversation, :confirm => 'Are you sure?', :method => :delete
+
+%br
+
+= link_to 'New Conversation', new_conversation_path

@@ -1,0 +1,12 @@
+%p#notice= notice
+
+%p
+  %b Group:
+  = @conversation.group_id
+%p
+  %b Subject:
+  = @conversation.subject
+
+= link_to 'Edit', edit_conversation_path(@conversation)
+\|
+= link_to 'Back', conversations_path

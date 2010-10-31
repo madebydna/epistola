@@ -1,0 +1,23 @@
+%h1 Listing messages
+
+%table
+  %tr
+    %th Conversation
+    %th User
+    %th Body
+    %th
+    %th
+    %th
+
+  - @messages.each do |message|
+    %tr
+      %td= message.conversation_id
+      %td= message.user
+      %td= message.body
+      %td= link_to 'Show', message
+      %td= link_to 'Edit', edit_message_path(message)
+      %td= link_to 'Destroy', message, :confirm => 'Are you sure?', :method => :delete
+
+%br
+
+= link_to 'New Message', new_message_path

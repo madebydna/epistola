@@ -1,0 +1,15 @@
+<%
+require 'faker'
+conversations = %w(design-patterns concurrency conference)
+names = []
+1.upto(10) do |i|
+  names << Faker::Name.name
+end
+1.upto(100) do |i|
+%>
+message_<%= i %>:
+  conversation: <%= conversations[rand(conversations.length)] %>
+  user: <%= names[rand(names.length)] %>
+  body: <%= Faker::Lorem.paragraphs(2) %>
+  created_at: <%= 3.weeks.ago.to_s(:db) += rand(21).days %>
+<% end %>

@@ -1,4 +1,11 @@
 Epistola::Application.routes.draw do
+
+  resources :groups do
+    resources :conversations do
+      resources :messages
+    end
+  end
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

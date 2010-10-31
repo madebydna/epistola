@@ -1,0 +1,9 @@
+rmu-general:
+  id: 1
+  name: RMU General
+rmu-alumni:
+  id: 2
+  name: RMU Alumni
+rmu-session-1:
+  id: 3
+  name: RMU Session 3
