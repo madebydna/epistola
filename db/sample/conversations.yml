@@ -1,15 +1,12 @@
 design-patterns:
-  id: 1
   group: rmu-general
-  subject: Focus Group: Design Patterns
+  subject: "Focus Group: Design Patterns"
   created_at: <%= 3.weeks.ago.to_s(:db) %>
 concurrency:
-  id: 2
   group: rmu-general
-  subject: Focus Group: Concurrency
+  subject: "Focus Group: Concurrency"
   created_at: <%= 3.weeks.ago.to_s(:db) %>
 conference:
-  id: 3
   group: rmu-general
   subject: RubyConf 2010 
   created_at: <%= 3.weeks.ago.to_s(:db) %>
