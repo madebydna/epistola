@@ -3,7 +3,7 @@ class CreateConversations < ActiveRecord::Migration
     create_table :conversations do |t|
       t.integer :group_id
       t.string :subject
-
+      t.integer :messages_count, :default => 0
       t.timestamps
     end
   end

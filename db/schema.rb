@@ -15,12 +15,14 @@ ActiveRecord::Schema.define(:version => 20101028024926) do
   create_table "conversations", :force => true do |t|
     t.integer  "group_id"
     t.string   "subject"
+    t.integer  "messages_count", :default => 0
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "groups", :force => true do |t|
     t.string   "name"
+    t.integer  "conversations_count", :default => 0
     t.datetime "created_at"
     t.datetime "updated_at"
   end

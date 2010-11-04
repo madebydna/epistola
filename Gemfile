@@ -29,6 +29,7 @@ gem 'mysql2'
 #   gem 'webrat'
 # end
 gem "rails3-generators"
+gem "will_paginate", "~> 3.0.pre2"
 gem "haml-rails"
 gem "jquery-rails"
 gem "haml"
@@ -37,3 +38,4 @@ gem "factory_girl_rails", :group => :test
 gem "remarkable_activemodel", ">=4.0.0.alpha4", :group => :test
 gem "compass"
 gem "ffaker", :group => :development
+gem "populator", :group => :development

@@ -1,12 +1,31 @@
-%p#notice= notice
-
-%p
-  %b Group:
-  = @conversation.group_id
-%p
-  %b Subject:
+#breadcrumbs 
+  = link_to 'All Groups', groups_path
+  >>
+  = link_to @group.name, group_conversations_path(@group)
+  >>
   = @conversation.subject
 
-= link_to 'Edit', edit_conversation_path(@conversation)
-\|
-= link_to 'Back', conversations_path
+%h2.subject 
+  = @conversation.subject
+  %span
+    = pluralize(@conversation.messages_count, "message")
+.page-info.group
+  .left
+    = page_entries_info @messages, :entry_name => 'message'
+  .right
+    = will_paginate @messages 
+- @messages.each do |message|
+  .message
+    %p.info.group
+      %span.left
+        = message.user
+      %span.right
+        = message.created_at.strftime("%b %d, %Y %H:%M")
+    .body
+      = simple_format(message.body)
+        
+.page-info.group
+  .left
+    = link_to "<< Back to Conversations", group_conversations_path(@group)
+  .right
+    = will_paginate @messages        

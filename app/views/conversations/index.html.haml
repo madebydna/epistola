@@ -1,21 +1,23 @@
-%h1 Listing conversations
+%h2 
+  = @group.name
+  
+#breadcrumbs 
+  = link_to 'All Groups', groups_path
+  >>
+  = @group.name
 
-%table
-  %tr
-    %th Group
-    %th Subject
-    %th
-    %th
-    %th
+- @conversations.each do |conversation|
+  .entries
+    %p
+      = link_to conversation.subject, group_conversation_path(@group, conversation)
+    %p.group
+      %span.left
+        = pluralize conversation.messages_count, "message"
+      %span.right
+        %strong
+          Last Post: 
+        = conversation.last_message_date.strftime("%b %d, %Y %H:%M")
+        by
+        = conversation.last_message_user
 
-  - @conversations.each do |conversation|
-    %tr
-      %td= conversation.group_id
-      %td= conversation.subject
-      %td= link_to 'Show', conversation
-      %td= link_to 'Edit', edit_conversation_path(conversation)
-      %td= link_to 'Destroy', conversation, :confirm => 'Are you sure?', :method => :delete
 
-%br
-
-= link_to 'New Conversation', new_conversation_path

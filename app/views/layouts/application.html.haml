@@ -2,8 +2,30 @@
 %html
 %head
   = csrf_meta_tag
+  = stylesheet_link_tag 'compiled/screen', :media => 'screen'
+  = stylesheet_link_tag 'compiled/print',  :media => 'print' 
+  /[if lt IE 8]
+    = stylesheet_link_tag 'compiled/ie'
   /[if lt IE 9]
     = javascript_include_tag 'html5'
 %body
-  = yield
-  = javascript_include_tag :defaults
+  #wrapper
+    #wrapper-inner
+      #header
+        #logo
+          = link_to image_tag("logo.jpg"), root_path
+      #content.group
+        #main
+          = yield
+        #aside
+          %h2 Search         
+          = form_tag search_path, :class => "bp search", :method => :get do
+            %p
+              = text_field_tag "search[q]", @query, :class => 'text'
+            %p
+              = submit_tag "All Groups", :class => "submit"
+              - if @group
+                = hidden_field_tag "search[group_id]", @group.id
+                = submit_tag "This Group"
+            
+    = javascript_include_tag :defaults

@@ -58,6 +58,7 @@ GEM
     mime-types (1.16)
     mysql2 (0.2.6)
     polyglot (0.3.1)
+    populator (0.2.5)
     rack (1.2.1)
     rack-mount (0.6.13)
       rack (>= 1.0.0)
@@ -99,6 +100,7 @@ GEM
     treetop (1.4.8)
       polyglot (>= 0.3.1)
     tzinfo (0.3.23)
+    will_paginate (3.0.pre2)
 
 PLATFORMS
   ruby
@@ -111,7 +113,9 @@ DEPENDENCIES
   haml-rails
   jquery-rails
   mysql2
+  populator
   rails (= 3.0.1)
   rails3-generators
   remarkable_activemodel (>= 4.0.0.alpha4)
   rspec-rails (>= 2.0.0.beta.19)
+  will_paginate (~> 3.0.pre2)

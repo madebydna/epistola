@@ -1,0 +1,36 @@
+%h2.subject
+  Search
+  - if @group
+    %span 
+      = link_to @group.name, group_conversations_path(@group)
+
+%h4 
+  %strong
+    = @results.total_entries
+  result(s)
+  found for
+  %strong
+    = @query
+    
+.page-info.group
+  .left
+    = page_entries_info @results, :entry_name => 'result'
+  .right
+    = will_paginate @results
+    
+- @results.each do |result|
+  .message
+    %h4
+      = link_to excerpt_result(result.subject, @query), group_conversation_path(result.conversation.group, result.conversation)
+    %p
+      = excerpt_result(result.body, @query)
+    .footer
+      = result.created_at.strftime("%B %d")
+      by
+      = result.user
+
+.page-info.group
+  .left
+    = page_entries_info @results, :entry_name => 'result'
+  .right
+    = will_paginate @results        
