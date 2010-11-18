@@ -1,83 +1,59 @@
+# encoding: utf-8
 class MessagesController < ApplicationController
-  # GET /messages
-  # GET /messages.xml
+  skip_before_filter :verify_authenticity_token, :only => [:create]
+  before_filter :authenticate_service, :only => [:create]
+  before_filter :force_utf8_params, :only => [:create]
+  
   def index
-    @messages = Message.all
-
-    respond_to do |format|
-      format.html # index.html.erb
-      format.xml  { render :xml => @messages }
+    @group = Group.find params[:group_id]
+    @message = @group.messages.find params[:thread]
+    unless @message.is_root?
+      redirect_to group_message_path(@group, @message) # redirect to permalink
     end
+    @messages = @message.subtree.paginate(:page => params[:page], :per_page => 20, 
+                                          :order => "created_at ASC")
   end
-
-  # GET /messages/1
-  # GET /messages/1.xml
+  
   def show
-    @message = Message.find(params[:id])
-
-    respond_to do |format|
-      format.html # show.html.erb
-      format.xml  { render :xml => @message }
-    end
-  end
-
-  # GET /messages/new
-  # GET /messages/new.xml
-  def new
-    @message = Message.new
-
-    respond_to do |format|
-      format.html # new.html.erb
-      format.xml  { render :xml => @message }
-    end
-  end
-
-  # GET /messages/1/edit
-  def edit
+    # permalink to message
     @message = Message.find(params[:id])
   end
 
-  # POST /messages
-  # POST /messages.xml
   def create
-    @message = Message.new(params[:message])
-
     respond_to do |format|
-      if @message.save
-        format.html { redirect_to(@message, :notice => 'Message was successfully created.') }
-        format.xml  { render :xml => @message, :status => :created, :location => @message }
-      else
-        format.html { render :action => "new" }
-        format.xml  { render :xml => @message.errors, :status => :unprocessable_entity }
+      format.json do
+        @group = Group.find_or_create_by_name(params[:message].delete(:group))
+        @message = @group.messages.create(params[:message])
+        render :json => @message.to_json
       end
     end
   end
 
-  # PUT /messages/1
-  # PUT /messages/1.xml
-  def update
-    @message = Message.find(params[:id])
-
-    respond_to do |format|
-      if @message.update_attributes(params[:message])
-        format.html { redirect_to(@message, :notice => 'Message was successfully updated.') }
-        format.xml  { head :ok }
+protected 
+  
+  def authenticate_service
+    authenticate_or_request_with_http_basic do |id, password| 
+      id == "andrea" && password == "secret"
+    end
+  end
+  
+  
+  def force_utf8_params
+    traverse = lambda do |object, block|
+      if object.kind_of?(Hash)
+        object.each_value { |o| traverse.call(o, block) }
+      elsif object.kind_of?(Array)
+        object.each { |o| traverse.call(o, block) }
       else
-        format.html { render :action => "edit" }
-        format.xml  { render :xml => @message.errors, :status => :unprocessable_entity }
+        block.call(object)
       end
+      object
     end
-  end
-
-  # DELETE /messages/1
-  # DELETE /messages/1.xml
-  def destroy
-    @message = Message.find(params[:id])
-    @message.destroy
-
-    respond_to do |format|
-      format.html { redirect_to(messages_url) }
-      format.xml  { head :ok }
+    force_encoding = lambda do |o|
+      o.force_encoding(Encoding::UTF_8) if o.respond_to?(:force_encoding)
     end
+    traverse.call(params, force_encoding)
   end
+  
+
 end

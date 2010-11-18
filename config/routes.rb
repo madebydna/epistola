@@ -1,10 +1,14 @@
 Epistola::Application.routes.draw do
 
-  resources :groups do
-    resources :conversations do
-      resources :messages
+  resources :groups, :only => [:index, :show] do
+    resources :messages, :only => [:index, :show] do
+      member do
+        get :permalink
+      end
     end
   end
+  
+  match 'messages.json', :to => 'messages#create'
   
   match 'search' => 'searches#index'
 

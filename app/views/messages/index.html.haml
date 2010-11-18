@@ -1,23 +1,31 @@
-%h1 Listing messages
+#breadcrumbs 
+  = link_to 'All Groups', groups_path
+  >>
+  = link_to @group.name, group_path(@group)
+  >>
+  = @message.subject
 
-%table
-  %tr
-    %th Conversation
-    %th User
-    %th Body
-    %th
-    %th
-    %th
-
-  - @messages.each do |message|
-    %tr
-      %td= message.conversation_id
-      %td= message.user
-      %td= message.body
-      %td= link_to 'Show', message
-      %td= link_to 'Edit', edit_message_path(message)
-      %td= link_to 'Destroy', message, :confirm => 'Are you sure?', :method => :delete
-
-%br
-
-= link_to 'New Message', new_message_path
+%h2.subject 
+  = @message.subject
+  %span
+    = pluralize(@messages.length, "message")
+.page-info.group
+  .left
+    = page_entries_info @messages, :entry_name => 'message'
+  .right
+    = will_paginate @messages 
+- @messages.each do |message|
+  .message
+    %p.info.group
+      %span.left
+        = message.user
+      %span.right
+        = message.created_at.strftime("%b %d, %Y %H:%M")
+    .body
+      = simple_format(message.body)
+        
+.page-info.group
+  .left
+    = link_to "<< Back to Conversations", group_path(@group)
+  .right
+    = will_paginate @messages

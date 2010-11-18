@@ -1,5 +1,5 @@
 class Group < ActiveRecord::Base
-  has_many :conversations
+  has_many :messages
   
   def members_count
     34

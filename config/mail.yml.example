@@ -1,0 +1,7 @@
+development:
+  email_username: yourmail@gmail.com
+  email_password: yoursecret
+  api_username: andrea  
+  api_password: secret
+  service_url: http://localhost:3000/messages.json
+  last_run:  

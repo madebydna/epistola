@@ -5,6 +5,7 @@ tmp/**/*
 .ackrc
 .rvmrc
 config/database.yml
+config/mail.yml
 public/cache/
 public/stylesheets/compiled/
 public/system/*

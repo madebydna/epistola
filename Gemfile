@@ -6,6 +6,7 @@ gem 'rails', '3.0.1'
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
 gem 'mysql2'
+gem 'rack', :git => 'git://github.com/rack/rack.git'
 
 # Use unicorn as the web server
 # gem 'unicorn'
@@ -39,3 +40,5 @@ gem "remarkable_activemodel", ">=4.0.0.alpha4", :group => :test
 gem "compass"
 gem "ffaker", :group => :development
 gem "populator", :group => :development
+gem "rest-client"
+gem "ancestry"

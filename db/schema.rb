@@ -10,29 +10,44 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101028024926) do
-
-  create_table "conversations", :force => true do |t|
-    t.integer  "group_id"
-    t.string   "subject"
-    t.integer  "messages_count", :default => 0
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
+ActiveRecord::Schema.define(:version => 20101115053246) do
 
   create_table "groups", :force => true do |t|
     t.string   "name"
-    t.integer  "conversations_count", :default => 0
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "messages_count"
   end
 
   create_table "messages", :force => true do |t|
-    t.integer  "conversation_id"
     t.string   "user"
     t.text     "body"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "ancestry"
+    t.integer  "ancestry_depth"
+    t.string   "guid"
+    t.string   "subject"
+    t.integer  "group_id"
+    t.string   "in_reply_to"
+    t.integer  "thread_id"
+  end
+
+  create_table "products", :id => false, :force => true do |t|
+    t.integer "item"
+    t.integer "supplier"
+    t.decimal "price",    :precision => 6, :scale => 2
+  end
+
+  create_table "test", :force => true do |t|
+    t.string   "ancestry",   :null => false
+    t.datetime "created_at", :null => false
+    t.string   "subject",    :null => false
+    t.integer  "thread_id",  :null => false
+  end
+
+  create_table "threads", :force => true do |t|
+    t.string "thread", :null => false
   end
 
 end
