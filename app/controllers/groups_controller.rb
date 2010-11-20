@@ -5,7 +5,7 @@ class GroupsController < ApplicationController
 
   def show
     @group = Group.find(params[:id])
-   # @conversations = Message.ordered_threads
+    @conversations = @group.messages.threads
   end
 
 end

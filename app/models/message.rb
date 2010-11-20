@@ -3,13 +3,18 @@ class Message < ActiveRecord::Base
   
   has_ancestry :orphan_strategy => :rootify, :cache_depth => true
   validates_uniqueness_of :guid
-    
-  #scope :ordered_threads, select("subject, MAX(created_at) AS last_message_date, user, ancestry").group("id").
-        #having("id IN (SELECT id FROM messages WHERE ancestry IS NULL)")
+  validates :group_id, :guid, :user, :presence => true
    
   before_create :set_parent_and_thread_id
   after_create :update_orphaned_children
-  before_update :reset_thread_id
+  
+  # groupwise aggregate to get last post and message count per thread
+  scope :threads, select("messages.*, count(*) AS total").
+                  joins("JOIN messages AS m2 ON messages.thread_id = m2.thread_id").
+                  group("messages.thread_id, messages.id").
+                  having("messages.created_at = MAX(m2.created_at)")
+  
+  
   
   def last_message_in_thread
     if is_root? and is_childless?
@@ -41,9 +46,13 @@ class Message < ActiveRecord::Base
     user.gsub(/\s*<[\w+\-.]+@[a-z\d\-.]+\.[a-z]+>/i, '')
   end
   
-  # ...
   def thread_param
     "#{id}-#{subject.strip.downcase.gsub('&', 'and').gsub(' ', '-').gsub(/[^\w-]/,'')}"
+  end
+  
+  def self.random_guid
+    chars = (('a'..'z').to_a + ('0'..'9').to_a)
+    (1..8).map { |a| chars[rand(chars.size)] }.join
   end
 
 private
@@ -55,23 +64,37 @@ private
   
   # this is in case reply messages get downloaded BEFORE the parent
   def update_orphaned_children
-    self.class.update_all({ :ancestry => self.child_ancestry }, { :in_reply_to => self.guid })
-    # thread_id can only be set here safely for new records without a parent
-    # newly saved record shouldn't already have child records
-    if thread_id.blank? && has_children?
-      self.update_attribute(:thread_id, children.first.thread_id)
-    elsif thread_id.blank?
+    # update_all skips the update_descendants_with_new_ancestry callback, so have to do this the long way
+    self.class.where(:in_reply_to => self.guid).all.each do |child|
+      child.ancestry = child_ancestry_of_new_record
+      child.save
+    end
+    reset_thread_id
+  end
+  
+  def reset_thread_id
+    if thread_id.blank? && descendants_of_new_record.any? # no ancestors, but descendants
+      self.update_attribute(:thread_id, descendants_of_new_record.first.thread_id)
+    elsif !thread_id.blank? && descendants_of_new_record.any? # ancestors and descendants
+     self.class.update_all({:thread_id => thread_id}, descendants_of_new_record_conditions)
+    elsif thread_id.blank? # no ancestors or descendants
       highest_thread_id = self.class.maximum('thread_id')
       self.update_attribute(:thread_id, highest_thread_id ? (highest_thread_id + 1) : 1)
     end
   end
   
-  def reset_thread_id
-    # if ancestry was updated, make sure the thread_id is that of the parent
-    # this can happen if parent gets downloaded later
-    if !ancestry_was.blank? && thread_id != parent.thread_id
-      self.thread_id = parent.thread_id
-    end
+  def child_ancestry_of_new_record
+    ancestry.blank? ? self.id : "#{self.ancestry}/#{self.id}"
+  end
+  
+  # ancestry gem uses dirty attributes as the basis to determine child_ancestry
+  # this will not work for newly created records, since ancestry_was will always be nil
+  def descendants_of_new_record
+    self.class.where(descendants_of_new_record_conditions)
+  end
+  
+  def descendants_of_new_record_conditions
+    ["ancestry like ? or ancestry = ?", "#{child_ancestry_of_new_record}/%", child_ancestry_of_new_record]
   end
   
 end

@@ -17,25 +17,32 @@ Create database and run the migrations
     rake db:create
     rake db:migrate
     
-Install the seed data
+Rename `mail.yml.example` to `mail.yml` and change the configuration. 
 
-    rake db:seed
+Run the rake task to download messages from Gmail
+
+    rake mail_bot:download_messages
     
-If anything went wrong, just remigrate. This will destroy all data in the db and migrate again.
+By default this will download messages sent through the Google Group "ruby-mendicant-university" and save them to the database, preserving the threaded nature of the messages.
 
-    rake db:remigrate
-    
-### Features
+Run the server to browse messages: `rails s`
 
+### Main Features
+
+* MailBot API to download messages from Google Groups (see `lib/mail_bot`)
 * Multiple groups
-* Conversations and messages
+* Threaded messages
 * Basic search over conversation subject and message body either in all groups or in a particular group
     
-### TODO
+### TODO/Issues
 
-* Seed data: add some variation in hours for messages (not just days)
-* When displaying list of conversations in a particular group, then sort by last message
-* Add further "caching" fields, such as last_message_id and last_message_user in conversation (an in group, maybe) 
-* Problem with adding other caching fields is that the gems used to create seed data skip callbacks
+* Add tests for MailBot functionality
+* Switch to PostgresSQl for full-text search capabilities
+* Lay foundation to support multiple mail-to-message mappers. Mail headers, etc. will differ depending on the mailing list backend, while the message object is always the same
+* Design/Views
+  * collapse quoted part of message
+  * collapse entire message
+  * color code different authors
+
 
     

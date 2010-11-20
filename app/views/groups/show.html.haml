@@ -19,12 +19,10 @@
     %p.group
       %span.left
         = #pluralize conversation.authors_count, "author"
-        = #pluralize conversation.descendants.length + 1, "message"
+        = pluralize conversation.total, "message"
       %span.right
         %strong
           Last Message: 
-        = #conversation.last_message_in_thread.created_at.strftime("%b %d, %Y @ %H:%M")
-        = conversation.max_date.strftime("%b %d, %Y @ %H:%M")
+        = conversation.created_at.strftime("%b %d, %Y @ %H:%M")
         by
-        = #conversation.last_message_in_thread.author
         = conversation.author
