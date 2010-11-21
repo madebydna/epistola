@@ -4,7 +4,7 @@ class Message < ActiveRecord::Base
   has_ancestry :orphan_strategy => :rootify, :cache_depth => true
   validates_uniqueness_of :guid
   validates :group_id, :guid, :user, :presence => true
-   
+  
   before_create :set_parent_and_thread_id
   after_create :update_orphaned_children
   
@@ -13,8 +13,6 @@ class Message < ActiveRecord::Base
                   joins("JOIN messages AS m2 ON messages.thread_id = m2.thread_id").
                   group("messages.thread_id, messages.id").
                   having("messages.created_at = MAX(m2.created_at)")
-  
-  
   
   def last_message_in_thread
     if is_root? and is_childless?

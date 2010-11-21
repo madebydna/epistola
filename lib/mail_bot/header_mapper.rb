@@ -20,7 +20,7 @@ module MailBot
       #   In-Reply-To: <4C3753E5.7060903@letterboxes.org>
       #   Subject: Re: Discussion thread for RMU Entrance Exam
       msg = {:message => {
-        :group => mail.sender[/(.*)@googlegroups.com/,1].gsub(/-/, ' ').squeeze, 
+        :group => mail.to.first[/(.*)@googlegroups.com/,1].gsub(/-/, ' ').squeeze, 
         :guid => mail.header['Message-ID'].to_s[/<(.*)@[\w\.-]+>/, 1],
         :in_reply_to => mail.header['In-Reply-To'].to_s[/<(.*)@[\w\.-]+>/, 1],
         :user => mail.header['From'].to_s,

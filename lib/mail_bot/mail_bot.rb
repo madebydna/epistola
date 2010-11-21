@@ -19,7 +19,7 @@ module MailBot
   
     def poll
       search_for = build_search
-      Mail.find :count => 30, :what => :first, :order => :asc,
+      Mail.find :count => 21, :what => :first, :order => :asc,
                 :keys => search_for do |mail|
         build_message(mail)
       end
