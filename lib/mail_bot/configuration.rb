@@ -24,7 +24,7 @@ module MailBot
     end
     
     def update_last_run!
-      @table[:last_run] = Time.now
+      @table[:last_run] = (Message.last.created_at - 1.day).beginning_of_day
       File.open(DEFAULT_PATH, 'w') do |file|
         file.write({Rails.env => self.marshal_dump}.to_yaml)
       end

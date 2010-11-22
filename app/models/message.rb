@@ -5,14 +5,12 @@ class Message < ActiveRecord::Base
   validates_uniqueness_of :guid
   validates :group_id, :guid, :user, :presence => true
   
-  before_create :set_parent_and_thread_id
-  after_create :update_orphaned_children
-  
   # groupwise aggregate to get last post and message count per thread
   scope :threads, select("messages.*, count(*) AS total").
                   joins("JOIN messages AS m2 ON messages.thread_id = m2.thread_id").
                   group("messages.thread_id, messages.id").
                   having("messages.created_at = MAX(m2.created_at)")
+  scope :thread_starters, where("(in_reply_to = '' OR in_reply_to IS NULL) AND ancestry IS NULL")
   
   def last_message_in_thread
     if is_root? and is_childless?
@@ -48,51 +46,65 @@ class Message < ActiveRecord::Base
     "#{id}-#{subject.strip.downcase.gsub('&', 'and').gsub(' ', '-').gsub(/[^\w-]/,'')}"
   end
   
+  # for tests - should probably be moved into a test helper
   def self.random_guid
     chars = (('a'..'z').to_a + ('0'..'9').to_a)
     (1..8).map { |a| chars[rand(chars.size)] }.join
   end
-
-private
-
-  def set_parent_and_thread_id
-    self.parent = self.class.find_by_guid(in_reply_to)
-    self.thread_id = parent.thread_id if parent
-  end
   
-  # this is in case reply messages get downloaded BEFORE the parent
-  def update_orphaned_children
-    # update_all skips the update_descendants_with_new_ancestry callback, so have to do this the long way
-    self.class.where(:in_reply_to => self.guid).all.each do |child|
-      child.ancestry = child_ancestry_of_new_record
-      child.save
-    end
-    reset_thread_id
-  end
-  
-  def reset_thread_id
-    if thread_id.blank? && descendants_of_new_record.any? # no ancestors, but descendants
-      self.update_attribute(:thread_id, descendants_of_new_record.first.thread_id)
-    elsif !thread_id.blank? && descendants_of_new_record.any? # ancestors and descendants
-     self.class.update_all({:thread_id => thread_id}, descendants_of_new_record_conditions)
-    elsif thread_id.blank? # no ancestors or descendants
-      highest_thread_id = self.class.maximum('thread_id')
-      self.update_attribute(:thread_id, highest_thread_id ? (highest_thread_id + 1) : 1)
+  # arrange newly downloaded messages into their inherent tree structure
+  def self.arrange_into_tree
+    if first_time?
+      arrange_for_first_time
+    else
+      integrate_new_messages
     end
   end
   
-  def child_ancestry_of_new_record
-    ancestry.blank? ? self.id : "#{self.ancestry}/#{self.id}"
+  def self.arrange_for_first_time
+    thread_starters.all.each do |msg|
+      msg.update_attribute(:thread_id, next_thread_id) unless msg.thread_id
+      msg.find_unassigned_children
+    end
   end
   
-  # ancestry gem uses dirty attributes as the basis to determine child_ancestry
-  # this will not work for newly created records, since ancestry_was will always be nil
-  def descendants_of_new_record
-    self.class.where(descendants_of_new_record_conditions)
+  def self.integrate_new_messages
+    where(:thread_id => nil).order("created_at asc").all.each do |msg|
+      if msg.in_reply_to.blank?
+        msg.update_attribute(:thread_id, next_thread_id)
+      else
+        p = where(:guid => msg.in_reply_to).first
+        msg.assign_parent(p) if p
+      end
+    end
   end
   
-  def descendants_of_new_record_conditions
-    ["ancestry like ? or ancestry = ?", "#{child_ancestry_of_new_record}/%", child_ancestry_of_new_record]
+  def find_unassigned_children
+    if unassigned_children.any?
+      unassigned_children.each do |child|
+        child.assign_parent(self)
+        child.find_unassigned_children
+      end
+    end
   end
   
+  def assign_parent(some_parent)
+    self.parent = some_parent
+    self.thread_id = some_parent.thread_id
+    self.save
+  end
+  
+  def unassigned_children
+    self.class.where(:in_reply_to => self.guid, :ancestry => nil).all
+  end
+  
+  def self.next_thread_id
+    highest_thread_id = maximum('thread_id')
+    highest_thread_id ? (highest_thread_id + 1) : 1
+  end
+  
+  def self.first_time?
+    maximum('thread_id').nil?
+  end
+    
 end

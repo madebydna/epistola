@@ -22,13 +22,21 @@ module MailBot
       msg = {:message => {
         :group => mail.to.first[/(.*)@googlegroups.com/,1].gsub(/-/, ' ').squeeze, 
         :guid => mail.header['Message-ID'].to_s[/<(.*)@[\w\.-]+>/, 1],
-        :in_reply_to => mail.header['In-Reply-To'].to_s[/<(.*)@[\w\.-]+>/, 1],
+        :in_reply_to => parse_reply_header(mail.header['In-Reply-To'].to_s),
         :user => mail.header['From'].to_s,
         :body => @mail_body,
         :created_at => get_sent_date(mail),
         :subject => mail.subject
       }}
       json_msg = msg.to_json
+    end
+    
+    def parse_reply_header(reply_header)
+      if reply_header =~ /^<ruby-mendicant-university/
+        nil
+      else
+        reply_header[/<(.*)@[\w\.-]+>/, 1]
+      end
     end
     
     def force_utf_8_encoding(mail)

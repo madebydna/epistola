@@ -9,6 +9,8 @@ namespace :mail_bot do
     MailBot::Bot.run(config) do
       @list = "ruby-mendicant-university"
     end
+    puts "Messages downloaded. Now arranging into tree ..."
+    Message.arrange_into_tree
   end
   
 end
