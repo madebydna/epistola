@@ -1,7 +1,7 @@
 class Message < ActiveRecord::Base
   belongs_to :group, :counter_cache => true
   
-  has_ancestry :orphan_strategy => :rootify, :cache_depth => true
+  has_ancestry :orphan_strategy => :rootify
   validates_uniqueness_of :guid
   validates :group_id, :guid, :user, :presence => true
   

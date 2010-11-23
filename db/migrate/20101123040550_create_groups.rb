@@ -1,9 +1,10 @@
 class CreateGroups < ActiveRecord::Migration
   def self.up
     create_table :groups do |t|
-      t.string :name
-      t.integer :conversations_count, :default => 0
-      t.timestamps
+      t.string   "name"
+      t.datetime "created_at"
+      t.datetime "updated_at"
+      t.integer  "messages_count"
     end
   end
 

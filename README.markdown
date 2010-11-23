@@ -37,8 +37,7 @@ Run the server to browse messages: `rails s`
 ### TODO/Issues
 
 * Add tests for MailBot functionality
-* Switch to PostgresSQl for full-text search capabilities
-* Lay foundation to support multiple mail-to-message mappers. Mail headers, etc. will differ depending on the mailing list backend, while the message object is always the same
+* Lay foundation to support multiple mail-to-message mappers. Mail headers, etc. will differ depending on the mailing list back-end, while the message object is always the same
 * Design/Views
   * collapse quoted part of message
   * collapse entire message
