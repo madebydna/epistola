@@ -4,10 +4,15 @@ GIT
   specs:
     database_cleaner (0.6.0.rc.2)
 
+GIT
+  remote: https://github.com/tenderlove/texticle.git
+  revision: 94b1e56
+  specs:
+    texticle (1.0.4.20101015113653)
+
 GEM
   remote: http://rubygems.org/
   specs:
-    ZenTest (4.4.0)
     abstract (1.0.0)
     actionmailer (3.0.3)
       actionpack (= 3.0.3)
@@ -38,9 +43,6 @@ GEM
     ancestry (1.2.3)
       activerecord (>= 2.2.2)
     arel (2.0.4)
-    autotest (4.4.4)
-    autotest-rails (4.1.0)
-      ZenTest
     builder (2.1.2)
     compass (0.10.6)
       haml (>= 3.0.4)
@@ -119,10 +121,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  ZenTest
   ancestry
-  autotest
-  autotest-rails
   compass
   database_cleaner!
   factory_girl_rails
@@ -139,4 +138,5 @@ DEPENDENCIES
   rspec (= 2.1.0)
   rspec-rails (= 2.1.0)
   spork (= 0.8.4)
+  texticle!
   will_paginate (~> 3.0.pre2)

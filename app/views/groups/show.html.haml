@@ -8,14 +8,14 @@
 
 .page-info.group
   .left
-    = #page_entries_info @conversations, :entry_name => 'conversation'
+    = page_entries_info @conversations, :entry_name => 'conversation'
   .right
-    = #will_paginate @conversations
+    = will_paginate @conversations
 
 - @conversations.each do |conversation|
   .entries
     %p
-      = link_to conversation.subject, group_messages_path(@group, :thread => conversation.thread_param)
+      = link_to conversation.thread_title, group_messages_path(@group, :thread => conversation.thread_param)
     %p.group
       %span.left
         = #pluralize conversation.authors_count, "author"

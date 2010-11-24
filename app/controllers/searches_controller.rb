@@ -7,7 +7,7 @@ class SearchesController < ApplicationController
     else
       @group = Group.find(params[:search][:group_id]) if params[:search][:group_id]
     end
-    @results = Message.search(params[:search], params[:page])
+    @results = Message.do_search(params[:search], params[:page])
   end
   
 end

@@ -23,7 +23,7 @@ Run the rake task to download messages from Gmail
 
     rake mail_bot:download_messages
     
-By default this will download messages sent through the Google Group "ruby-mendicant-university" and save them to the database, preserving the threaded nature of the messages.
+By default this will download messages sent through the Google Group "ruby-mendicant-university" and save them to the database, preserving the threaded nature of the messages. Note that the rails server needs to be running for the rake task to work.
 
 Run the server to browse messages: `rails s`
 

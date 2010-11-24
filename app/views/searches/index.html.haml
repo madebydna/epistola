@@ -2,7 +2,7 @@
   Search
   - if @group
     %span 
-      = link_to @group.name, group_conversations_path(@group)
+      = link_to @group.name, group_path(@group)
 
 %h4 
   %strong
@@ -21,7 +21,7 @@
 - @results.each do |result|
   .message
     %h4
-      = link_to excerpt_result(result.subject, @query), group_conversation_path(result.conversation.group, result.conversation)
+      = link_to excerpt_result(result.subject, @query), group_messages_path(result.group, result.thread_param)
     %p
       = excerpt_result(result.body, @query)
     .footer

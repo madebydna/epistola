@@ -7,6 +7,7 @@ gem 'rails', '3.0.3'
 
 # gem 'mysql2'
 gem 'pg'
+gem 'texticle', :git => "https://github.com/tenderlove/texticle.git"
 
 # Use unicorn as the web server
 # gem 'unicorn'
@@ -45,9 +46,6 @@ group :test do
     gem "rspec-rails", "2.1.0"
     gem "factory_girl_rails"
     gem "remarkable_activemodel", ">=4.0.0.alpha4"
-    gem "ZenTest"
-    gem "autotest"
-    gem "autotest-rails"
     gem 'spork', '0.8.4'
     gem "database_cleaner", :git => "git://github.com/madebydna/database_cleaner.git"
 end

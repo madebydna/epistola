@@ -6,11 +6,22 @@ class Message < ActiveRecord::Base
   validates :group_id, :guid, :user, :presence => true
   
   # groupwise aggregate to get last post and message count per thread
-  scope :threads, select("messages.*, count(*) AS total").
+  scope :threads, select("messages.id, messages.user, messages.subject, messages.created_at, 
+  count(messages.thread_id) AS total").
                   joins("JOIN messages AS m2 ON messages.thread_id = m2.thread_id").
-                  group("messages.thread_id, messages.id").
+                  group("messages.thread_id, messages.id, messages.user, messages.subject, messages.created_at").
                   having("messages.created_at = MAX(m2.created_at)")
   scope :thread_starters, where("(in_reply_to = '' OR in_reply_to IS NULL) AND ancestry IS NULL")
+  
+  scope :conversations_count_in_group, lambda {|group_id| select("count(*)").joins("INNER JOIN (SELECT DISTINCT ON (thread_id) id FROM messages 
+  WHERE messages.group_id = #{group_id} GROUP BY thread_id, id) AS m2 ON m2.id = messages.id")}
+  
+  # full text search with Postgres and texticle
+  index do
+    subject
+    body
+  end
+  
   
   def last_message_in_thread
     if is_root? and is_childless?
@@ -37,6 +48,10 @@ class Message < ActiveRecord::Base
     subtree.group_by {|m| m.user}    
   end
   
+  def thread_title
+    self.subject.gsub(/^[Re:\s]*/, '')
+  end
+  
   def author
     # gets rid of email address in name
     user.gsub(/\s*<[\w+\-.]+@[a-z\d\-.]+\.[a-z]+>/i, '')
@@ -44,6 +59,16 @@ class Message < ActiveRecord::Base
   
   def thread_param
     "#{id}-#{subject.strip.downcase.gsub('&', 'and').gsub(' ', '-').gsub(/[^\w-]/,'')}"
+  end
+  
+  # full text search on subject and body, within a particular group or not
+  def self.do_search(params, page)
+    within_group = params[:group_id]
+    if within_group
+      search(params[:q]).where(:group_id => within_group).paginate(:page => page)
+    else
+      search(params[:q]).paginate(:page => page)
+    end
   end
   
   # for tests - should probably be moved into a test helper

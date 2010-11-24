@@ -3,4 +3,4 @@
     %p
       = link_to group.name, group_path(group) 
     %p
-      = #{}"#{pluralize(group.conversations_count, "conversation")} | #{pluralize(group.members_count, "member")}"
+      = "#{pluralize(group.conversations_count, "conversation")} | #{pluralize(group.messages_count, "message")}"

@@ -5,7 +5,7 @@ class GroupsController < ApplicationController
 
   def show
     @group = Group.find(params[:id])
-    @conversations = @group.messages.threads
+    @conversations = @group.messages.threads.paginate(:page => params[:page])
   end
 
 end

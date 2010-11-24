@@ -1,12 +1,9 @@
 class Group < ActiveRecord::Base
   has_many :messages
   
-  def members_count
-    34
-  end
-  
-  def recent(number_of_messages=2)
-    conversations.joins(:messages).order("messages.created_at DESC").limit(number_of_messages).reverse
+  def conversations_count
+    Message.conversations_count_in_group(self.id).
+    all.first.count.to_i
   end
   
 end
