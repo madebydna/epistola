@@ -19,13 +19,13 @@ Create database and run the migrations
     
 Rename `mail.yml.example` to `mail.yml` and change the configuration. 
 
-Run the rake task to download messages from Gmail
+Start the Rails server before running the rake task to download messages from Gmail
 
     rake mail_bot:download_messages
     
-By default this will download messages sent through the Google Group "ruby-mendicant-university" and save them to the database, preserving the threaded nature of the messages. Note that the rails server needs to be running for the rake task to work.
+By default this will download messages sent through the Google Group "ruby-mendicant-university" and save them to the database, preserving the threaded nature of the messages. At the moment the number of messages is capped at 60. 
 
-Run the server to browse messages: `rails s`
+Messages can now be browsed by group and by thread at `localhost:3000`
 
 ### Main Features
 
@@ -36,8 +36,12 @@ Run the server to browse messages: `rails s`
     
 ### TODO/Issues
 
+* Fix remaining encoding issues
+  * PGError: ERROR:  invalid byte sequence for encoding "UTF8"
+  * Encoding::CompatibilityError incompatible character encodings: UTF-8 and ASCII-8BIT
 * Add tests for MailBot functionality
 * Lay foundation to support multiple mail-to-message mappers. Mail headers, etc. will differ depending on the mailing list back-end, while the message object is always the same
+* Remove matches from quoted part of message from searches to avoid duplication (?)
 * Design/Views
   * collapse quoted part of message
   * collapse entire message
